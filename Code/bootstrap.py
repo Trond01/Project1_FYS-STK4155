@@ -1,8 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from Code.utilities import r2_sampling, random_dataset_split_preparation
+from Code.utilities import r2_sampling, random_dataset_split_preparation, maximal_degree, nn_deg_indeces
 from Code.regression import fit_OLS
+
+# Code inspired by https://compphysics.github.io/MachineLearning/doc/LectureNotes/_build/html/chapter3.html#the-bias-variance-tradeoff
+
+
 
 def resample(X, Z):
 
@@ -39,7 +43,7 @@ def bootstrap(data, n_bootstraps = 10, plot_first = False):
         # Make prediction
         Z_pred[:, i] = run_data["predictor"](test_X[0])
 
-    # Compute error, bias and variance
+    # Compute error, bias and variance estimators
     error    = np.mean( np.mean((test_Z - Z_pred)**2, axis=1, keepdims=True) )
     bias     = np.mean( (test_Z - np.mean(Z_pred, axis=1, keepdims=True))**2 )
     variance = np.mean( np.var(Z_pred, axis=1, keepdims=True) )
@@ -47,19 +51,31 @@ def bootstrap(data, n_bootstraps = 10, plot_first = False):
     return error, bias, variance
 
 
-def tradeoff_experiment(num_points = 100 ,num_features = 100, n_bootstraps = 50, nth=10):    
+def tradeoff_experiment(num_points = 100 ,num_features = 100, n_bootstraps = 50, nth=10, 
+                        data=None, seed=42, mark_deg_nn=True, filename=False):    
+    """
+    If using custom data, the data variable needs to be a dictionary with the fields {'x', 'y', 'z'}
+    containing arrays with their respective data points. x, y, z should be of shape (number_points, 1)
+    """
     """
     nth: plot each nth figure
     """
 
+    # Set seed
+    np.random.seed(seed)
+
     # Initialise data storage
-    feature_numbers = np.arange(1, num_features, 1)
-    errors    = []
-    biases    = []
-    variances = []
+    feature_numbers = np.arange(1, num_features+1, 1)
+    errors    = np.zeros(num_features)
+    biases    = np.zeros(num_features)
+    variances = np.zeros(num_features)
     
-    # Initial sample of data, so far no index for test
-    data = r2_sampling(num_points)
+    # If no data is given, sample from Franke. 
+    if data is None:
+        data = r2_sampling(num_points)
+    
+    # Start with test_index = None to make random_dat... generate test_indeces. 
+    # These same indeces is used throughout
     test_index = None
 
     # Run experiment for each feature number
@@ -79,31 +95,42 @@ def tradeoff_experiment(num_points = 100 ,num_features = 100, n_bootstraps = 50,
         bias, variance = bias/error, variance/error
 
         # Add the result
-        errors.append(error) # unscaled...
-        biases.append(bias)
-        variances.append(variance)
+        errors[num-1]    = error # unscaled...
+        biases[num-1]    = bias
+        variances[num-1] = variance
 
-    fig, ax = plt.subplots(figsize=(7, 7))
+    ## Make plot of bias and variance
+    # fig, ax = plt.subplots(figsize=(7, 7))
 
+    # Highlight p(x)=a0+...+an0 x^n +...+a0n y^n (whole number final), plot biases and variances
+    if mark_deg_nn:
+        max_deg = maximal_degree(num_features)
+        xy_deg_indeces = nn_deg_indeces(max_deg)
+        plt.plot(feature_numbers[xy_deg_indeces], biases[xy_deg_indeces], "o", c="b")
     plt.plot(feature_numbers, biases,    label = "bias",     c="b")
     plt.plot(feature_numbers, variances, label = "variance", c="g")
+    
+    # Add legend and labels
     plt.legend()
-    plt.savefig("bias_var_trade2.png")
     plt.xlabel("Number of features")
     plt.ylabel("Quantity divided by total error")
+    
+    # Save figure if filename given
+    if filename:
+        plt.savefig(filename)
     plt.show()
 
+    ## Make separate plot of error as its eventual magnitude makes everything else meaningless
     fig, ax = plt.subplots(figsize=(7, 7))
-
+    if mark_deg_nn:
+        xy_deg_indeces = nn_deg_indeces(max_deg)
+        plt.plot(feature_numbers[xy_deg_indeces], errors[xy_deg_indeces], "o", c="r")
     plt.plot(feature_numbers, errors, c="r")
     plt.legend()
-    # plt.savefig("bias_var_trade2.err.png")
     plt.xlabel("Number of features")
     plt.ylabel("Error")
+    if filename:
+        plt.savefig("errors_"+filename)
     plt.show()
 
-    return feature_numbers, errors
-
-feature_numbers, errors = tradeoff_experiment(num_points=50,num_features=50,nth=100)
-
-
+    return feature_numbers, errors, biases, variances

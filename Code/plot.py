@@ -1,3 +1,19 @@
+import numpy as np
+from Code.utilities import FrankeFunction, feature_matrix
+from matplotlib import pyplot as plt
+from matplotlib import cm
+from matplotlib.ticker import LinearLocator, FormatStrFormatter
+
+def plot_Franke(resolution = 101):
+    # Make data.
+    x = np.linspace(0, 1, resolution)
+    y = np.linspace(0, 1, resolution)
+    x, y = np.meshgrid(x,y)
+
+    z = FrankeFunction(x, y)
+
+    plot_surface(x,y,z)
+
 def plot_surface(x,y,z, filename=None):
 
     # Init figure
@@ -17,20 +33,8 @@ def plot_surface(x,y,z, filename=None):
     fig.colorbar(surf, shrink=0.5, aspect=5)
 
     plt.show()
-    if filename:
+    if type(filename) == "string":
         plt.savefig(filename)
-
-
-def plot_Franke(resolution = 101):
-    # Make data.
-    x = np.linspace(0, 1, resolution)
-    y = np.linspace(0, 1, resolution)
-    x, y = np.meshgrid(x,y)
-
-    z = FrankeFunction(x, y)
-
-    plot_surface(x,y,z)
-
 
 def plot_model_prediction(predict_func, num_features, means, var, filename=None):
     fig = plt.figure()
