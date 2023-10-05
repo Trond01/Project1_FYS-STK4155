@@ -57,96 +57,65 @@ def bootstrap(data, n_bootstraps=10, plot_first=False):
     return error, bias, variance
 
 
-def tradeoff_experiment(
-    num_points=100,
-    num_features=100,
-    n_bootstraps=50,
-    nth=10,
-    data=None,
-    seed=42,
-    mark_deg_nn=True,
-    filename=False,
-):
+def cross_validation_experiment(n_folds, n_points=100, num_features=100, data = None, mark_deg_nn = True, filename = None, seed=42, start=1):
     """
     If using custom data, the data variable needs to be a dictionary with the fields {'x', 'y', 'z'}
     containing arrays with their respective data points. x, y, z should be of shape (number_points, 1)
-    """
-    """
-    nth: plot each nth figure
     """
 
     # Set seed
     np.random.seed(seed)
 
-    # Initialise data storage
-    feature_numbers = np.arange(1, num_features + 1, 1)
-    errors = np.zeros(num_features)
-    biases = np.zeros(num_features)
-    variances = np.zeros(num_features)
+    # Feature numbers and data storage init
+    feature_numbers  = np.arange(start, num_features+1, 1)
+    all_errors_test  = np.zeros(num_features-start+1)
+    all_errors_train = np.zeros(num_features-start+1)
 
-    # If no data is given, sample from Franke.
+    # Initial sample of data, so far no index for test
     if data is None:
-        data = r2_sampling(num_points)
-
-    # Start with test_index = None to make random_dat... generate test_indeces.
-    # These same indeces is used throughout
-    test_index = None
+        data = r2_sampling(n_points)
 
     # Run experiment for each feature number
     for num in feature_numbers:
-        # Create feature matrix
-        new_data = random_dataset_split_preparation(
-            data, num, scale=True, test_index=test_index
-        )
-        test_index = new_data["test_index"]  # Ensure same test split
 
-        # Compute error, bias and variance
-        plot = False
-        if num % nth == 0:
-            plot = True
-        error, bias, variance = bootstrap(
-            new_data, n_bootstraps=n_bootstraps, plot_first=plot
-        )
+        X = feature_matrix(data['x'], data['y'], num)
+        X, means, var = scale_feature_matrix(X)
 
-        # We need to scale bias and variance to get a meaningfull result
-        bias, variance = bias / error, variance / error
+        splits = k_fold_split(X, data['z'], n_folds)
+        
 
-        # Add the result
-        errors[num - 1] = error  # unscaled...
-        biases[num - 1] = bias
-        variances[num - 1] = variance
+        single_fold_errors_test  = []     
+        single_fold_errors_train = []        
+        for train_X, train_Z, test_X, test_Y in splits:
+            fold_data = {'train_X':train_X, 'train_Z':train_Z, 'test_X':test_X, 'test_Z':test_Y,
+                        'feature_matrix':X, 'means':means, 'var':var, 'num_features':num,
+                        'x':data['x'], 'y':data['y'], 'z':data['z']}
+            results_data = fit_OLS(data=fold_data, plot_or_not=False)
+            single_fold_errors_test.append(results_data['test_loss'])
+            single_fold_errors_train.append(results_data['train_loss'])
+        
+        all_errors_test[num-start]  = np.mean(single_fold_errors_test)
+        all_errors_train[num-start] = np.mean(single_fold_errors_train)
 
-    ## Make plot of bias and variance
-    # fig, ax = plt.subplots(figsize=(7, 7))
+    # Make plot of test and train errors
+    plt.plot(feature_numbers, all_errors_test,    label = "Average test error",    c="g")
+    plt.plot(feature_numbers, all_errors_train,    label = "Average train error",    c="r")
 
-    # Highlight p(x)=a0+...+an0 x^n +...+a0n y^n (whole number final), plot biases and variances
+    # Mark finished degrees
     if mark_deg_nn:
         max_deg = maximal_degree(num_features)
         xy_deg_indeces = nn_deg_indeces(max_deg)
-        plt.plot(feature_numbers[xy_deg_indeces], biases[xy_deg_indeces], "o", c="b")
-    plt.plot(feature_numbers, biases, label="bias", c="b")
-    plt.plot(feature_numbers, variances, label="variance", c="g")
+        xy_deg_indeces = xy_deg_indeces[xy_deg_indeces >= start-1] - start + 1
+        plt.plot(feature_numbers[xy_deg_indeces], all_errors_train[xy_deg_indeces], "o", c="r")
 
-    # Add legend and labels
+    # Add legend, x label and save
     plt.legend()
     plt.xlabel("Number of features")
-    plt.ylabel("Quantity divided by total error")
-
-    # Save figure if filename given
     if filename:
         plt.savefig(filename)
     plt.show()
 
-    ## Make separate plot of error as its eventual magnitude makes everything else meaningless
-    fig, ax = plt.subplots(figsize=(7, 7))
-    if mark_deg_nn:
-        xy_deg_indeces = nn_deg_indeces(max_deg)
-        plt.plot(feature_numbers[xy_deg_indeces], errors[xy_deg_indeces], "o", c="r")
-    plt.plot(feature_numbers, errors, c="r")
-    plt.xlabel("Number of features")
-    plt.ylabel("Error")
-    if filename:
-        plt.savefig("errors_" + filename)
-    plt.show()
+    return all_errors_test, all_errors_train
+    
 
     return feature_numbers, errors, biases, variances
