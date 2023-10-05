@@ -67,7 +67,6 @@ def tradeoff_experiment(
     mark_deg_nn=True,
     filename=False,
     sigma2=0.0,
-    sigma2=0,
 ):
     """
     If using custom data, the data variable needs to be a dictionary with the fields {'x', 'y', 'z'}
