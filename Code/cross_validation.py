@@ -7,7 +7,7 @@ from Code.utilities import (
     maximal_degree,
     nn_deg_indeces,
 )
-from Code.regression import fit_OLS
+from Code.regression import fit_OLS, fit_LASSO, fit_RIDGE
 
 
 def k_fold_split(X, Z, k):
@@ -52,9 +52,16 @@ def k_fold_split(X, Z, k):
     return splits
 
 
+methods_list = [
+    {"fit_func": fit_OLS, "lam": 0, "name": "OLS", "styles": ["r", "r--"]},
+    {"fit_func": fit_RIDGE, "lam": 0.01, "name": "RIDGE", "styles": ["b", "b--"]},
+    {"fit_func": fit_LASSO, "lam": 0.01, "name": "LASSO", "styles": ["g", "g--"]},
+]
+
+
 def cross_validation_experiment(
-    method_dict_list,
     n_folds,
+    method_dict_list=methods_list,
     n_points=100,
     num_features=100,
     data=None,
