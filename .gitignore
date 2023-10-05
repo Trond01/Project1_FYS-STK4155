@@ -3,4 +3,7 @@
 
 __pycache__
 
+# Ignore all PNG files
+*.png
+
 
