@@ -133,11 +133,11 @@ def plot_beta_experiment(train_method, beta_comp_indeces, num_features = 100, nu
 
 
 
-def analyze_lambda_range(fit_method, num_points, high_deg, lam_low, lam_high, num_lam, seed=42, nth=3, data=None, filename="lambda_range.png"):
+def analyze_lambda_range(train_method,  high_deg, lam_low, lam_high, num_lam, num_points=101, seed=42, nth=3, data=None, filename="lambda_range.png"):
     """_summary_
 
     Args:
-        method (function): The function used to fit the data(fit_RIDGE, fit_LASSO)
+        method (function): The function used to fit the data(train_RIDGE, train_LASSO)
         num_points (_type_): _description_
         high_deg (_type_): _description_
         lam_low (_type_): _description_
@@ -169,7 +169,7 @@ def analyze_lambda_range(fit_method, num_points, high_deg, lam_low, lam_high, nu
     # Loop over all lambdas and degrees
     for i in range(lams.shape[0]):
         for j in range(lams.shape[1]):
-            fit_data = fit_method(data, degs[i, j], lams[i, j], plot_or_not=False, test_index=test_index)
+            fit_data = train_method(data, degs[i, j], lams[i, j], plot_or_not=False, test_index=test_index)
             test_index = fit_data.get('test_index')
             train_errors[i, j] = fit_data['train_loss']
             test_errors[i, j] = fit_data['test_loss']
