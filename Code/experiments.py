@@ -122,6 +122,7 @@ def plot_beta_experiment(train_method, beta_comp_indeces, num_features = 100, nu
 
     # Add legend, save if given filename. Show
     plt.legend()
+    plt.title("Magnitude of parameters")
     plt.xlabel("Number of features")
     if filename:
         plt.savefig(filename)
