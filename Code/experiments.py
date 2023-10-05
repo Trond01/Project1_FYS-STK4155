@@ -74,7 +74,7 @@ def plot_MSE_R2_experiment(train_method, num_features = 100, num_points = 151, l
     return MRS_test, MRS_train,R2_test, R2_train
 
 
-def plot_beta_experiment(train_method, beta_comp_indeces, num_features = 100, num_points = 151, lam=0, seed = 42, mark_deg_nn = True, filename=False, data = None):    
+def plot_beta_experiment(train_method, beta_comp_indeces, num_features = 100, num_points = 151, lam=0, seed = 42, mark_deg_nn = True, filename=False, data = None, sigma2=0.0):    
     """
     If using custom data, the data variable needs to be a dictionary with the fields {'x', 'y', 'z'}
     containing arrays with their respective data points. x, y, z should be of shape (number_points, 1)
@@ -89,7 +89,7 @@ def plot_beta_experiment(train_method, beta_comp_indeces, num_features = 100, nu
 
     # Sample data
     if data is None:
-        data = r2_sampling(num_points)
+        data = r2_sampling(num_points, sigma2=sigma2)
     test_index = None # First preparation will make test index
 
     # Run experiment for each feature number
@@ -134,7 +134,7 @@ def plot_beta_experiment(train_method, beta_comp_indeces, num_features = 100, nu
 
 
 
-def analyze_lambda_range(train_method,  high_deg, lam_low, lam_high, num_lam, num_points=101, seed=42, nth=3, data=None, filename="lambda_range.png"):
+def analyze_lambda_range(train_method,  high_deg, lam_low, lam_high, num_lam, num_points=101, seed=42, nth=3, data=None, filename=None, sigma2=0.0):
     """_summary_
 
     Args:
@@ -152,7 +152,7 @@ def analyze_lambda_range(train_method,  high_deg, lam_low, lam_high, num_lam, nu
     
     # Set seed and sample
     np.random.seed(seed)
-    data = r2_sampling(num_points) if data is None else data
+    data = r2_sampling(num_points, sigma2=sigma2) if data is None else data
     
     # Initialise values for experiment
     all_lambdas = np.logspace(lam_low, lam_high, num_lam)
@@ -187,5 +187,6 @@ def analyze_lambda_range(train_method,  high_deg, lam_low, lam_high, num_lam, nu
     
     # Ensure no overlap, save and show
     plt.tight_layout() 
-    plt.savefig(filename)
+    if filename is not None:
+        plt.savefig(filename)
     plt.show()

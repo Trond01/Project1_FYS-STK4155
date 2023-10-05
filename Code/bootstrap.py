@@ -66,6 +66,7 @@ def tradeoff_experiment(
     seed=42,
     mark_deg_nn=True,
     filename=False,
+    sigma2=0.0,
 ):
     """
     If using custom data, the data variable needs to be a dictionary with the fields {'x', 'y', 'z'}
@@ -86,7 +87,7 @@ def tradeoff_experiment(
 
     # If no data is given, sample from Franke.
     if data is None:
-        data = r2_sampling(num_points)
+        data = r2_sampling(num_points, sigma2=sigma2)
 
     # Start with test_index = None to make random_dat... generate test_indeces.
     # These same indeces is used throughout
@@ -145,8 +146,5 @@ def tradeoff_experiment(
     plt.plot(feature_numbers, errors, c="r")
     plt.xlabel("Number of features")
     plt.ylabel("Error")
-    if filename:
-        plt.savefig("errors_" + filename)
-    plt.show()
 
     return feature_numbers, errors, biases, variances
