@@ -36,6 +36,10 @@ def bootstrap(data, n_bootstraps=10, plot_first=False):
     # Array for storing finds
     Z_pred = np.empty((test_Z.shape[0], n_bootstraps))
 
+
+    bootstraps_train_loss = []
+    bootstraps_test_loss = []
+
     # Run the bootstrap
     for i in range(n_bootstraps):
         # Resample
@@ -46,6 +50,9 @@ def bootstrap(data, n_bootstraps=10, plot_first=False):
             plot_first = False
         run_data = fit_OLS(data, plot_or_not=plot_first)
 
+        bootstraps_train_loss.append(run_data['train_loss'])
+        bootstraps_test_loss.append(run_data['test_loss'])
+
         # Make prediction
         Z_pred[:, i] = run_data["predictor"](test_X).ravel()
 
@@ -54,7 +61,7 @@ def bootstrap(data, n_bootstraps=10, plot_first=False):
     bias = np.mean((test_Z - np.mean(Z_pred, axis=1, keepdims=True)) ** 2)
     variance = np.mean(np.var(Z_pred, axis=1, keepdims=True))
 
-    return error, bias, variance
+    return error, bias, variance, sum(bootstraps_train_loss)/len(bootstraps_train_loss), sum(bootstraps_test_loss)/len(bootstraps_test_loss)
 
 
 def tradeoff_experiment(
@@ -66,7 +73,7 @@ def tradeoff_experiment(
     seed=42,
     mark_deg_nn=True,
     filename=False,
-    sigma2=0,
+    sigma2=0.0,
 ):
     """
     If using custom data, the data variable needs to be a dictionary with the fields {'x', 'y', 'z'}
@@ -84,6 +91,9 @@ def tradeoff_experiment(
     errors = np.zeros(num_features)
     biases = np.zeros(num_features)
     variances = np.zeros(num_features)
+
+    train_losses = np.zeros(num_features)
+    test_losses = np.zeros(num_features)
 
     # If no data is given, sample from Franke.
     if data is None:
@@ -105,9 +115,10 @@ def tradeoff_experiment(
         plot = False
         if num % nth == 0:
             plot = True
-        error, bias, variance = bootstrap(
+        error, bias, variance, train_mean, test_mean = bootstrap(
             new_data, n_bootstraps=n_bootstraps, plot_first=plot
         )
+
 
         # We need to scale bias and variance to get a meaningfull result
         bias, variance = bias, variance
@@ -116,6 +127,10 @@ def tradeoff_experiment(
         errors[num - 1] = error
         biases[num - 1] = bias
         variances[num - 1] = variance
+
+        train_losses[num - 1] = train_mean
+        test_losses[num - 1] = test_mean
+
 
     ## Make plot of bias and variance
 
@@ -137,6 +152,17 @@ def tradeoff_experiment(
     # Save figure if filename given
     if filename:
         plt.savefig(filename)
+    plt.show()
+
+    plt.plot(feature_numbers, train_losses, label="Bootstrap Train Loss", c="b")
+    plt.plot(feature_numbers, test_losses, label="Bootstrap Test Loss", c="r")
+    
+    # Add legend and labels
+    plt.legend()
+    plt.xlabel("Number of features")
+    plt.ylabel("MSE")
+    plt.title("Loss")
+
     plt.show()
 
     return feature_numbers, errors, biases, variances
