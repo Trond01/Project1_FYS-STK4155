@@ -182,8 +182,8 @@ def analyze_lambda_range(train_method,  high_deg, lam_low, lam_high, num_lam, nu
     # Customize plot
     axs[0].set(title="Train", xlabel="Lambda", ylabel="MSE", xscale="log")
     axs[1].set(title="Test", xlabel="Lambda", xscale="log")
-    axs[0].legend(title="Degree")
-    axs[1].legend(title="Degree")
+    axs[0].legend(title="Features")
+    axs[1].legend(title="Features")
     
     # Ensure no overlap, save and show
     plt.tight_layout() 
