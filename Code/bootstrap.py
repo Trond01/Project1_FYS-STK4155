@@ -47,7 +47,7 @@ def bootstrap(data, n_bootstraps=10, plot_first=False):
         run_data = fit_OLS(data, plot_or_not=plot_first)
 
         # Make prediction
-        Z_pred[:, i] = run_data["predictor"](test_X[0])
+        Z_pred[:, i] = run_data["predictor"](test_X).ravel()
 
     # Compute error, bias and variance estimators
     error = np.mean(np.mean((test_Z - Z_pred) ** 2, axis=1, keepdims=True))
@@ -67,6 +67,7 @@ def tradeoff_experiment(
     mark_deg_nn=True,
     filename=False,
     sigma2=0.0,
+    sigma2=0,
 ):
     """
     If using custom data, the data variable needs to be a dictionary with the fields {'x', 'y', 'z'}
@@ -110,41 +111,33 @@ def tradeoff_experiment(
         )
 
         # We need to scale bias and variance to get a meaningfull result
-        bias, variance = bias / error, variance / error
+        bias, variance = bias, variance
 
         # Add the result
-        errors[num - 1] = error  # unscaled...
+        errors[num - 1] = error
         biases[num - 1] = bias
         variances[num - 1] = variance
 
     ## Make plot of bias and variance
-    # fig, ax = plt.subplots(figsize=(7, 7))
 
     # Highlight p(x)=a0+...+an0 x^n +...+a0n y^n (whole number final), plot biases and variances
     if mark_deg_nn:
         max_deg = maximal_degree(num_features)
         xy_deg_indeces = nn_deg_indeces(max_deg)
         plt.plot(feature_numbers[xy_deg_indeces], biases[xy_deg_indeces], "o", c="b")
+
+    plt.plot(feature_numbers, errors, label="error", c="r")
     plt.plot(feature_numbers, biases, label="bias", c="b")
     plt.plot(feature_numbers, variances, label="variance", c="g")
 
     # Add legend and labels
     plt.legend()
     plt.xlabel("Number of features")
-    plt.ylabel("Quantity divided by total error")
+    plt.title("The Bias Variance Tradeoff")
 
     # Save figure if filename given
     if filename:
         plt.savefig(filename)
     plt.show()
-
-    ## Make separate plot of error as its eventual magnitude makes everything else meaningless
-    fig, ax = plt.subplots(figsize=(7, 7))
-    if mark_deg_nn:
-        xy_deg_indeces = nn_deg_indeces(max_deg)
-        plt.plot(feature_numbers[xy_deg_indeces], errors[xy_deg_indeces], "o", c="r")
-    plt.plot(feature_numbers, errors, c="r")
-    plt.xlabel("Number of features")
-    plt.ylabel("Error")
 
     return feature_numbers, errors, biases, variances
