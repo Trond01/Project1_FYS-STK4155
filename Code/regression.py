@@ -15,6 +15,15 @@ from Code.utilities import (
 
 
 def fit_OLS(data, plot_or_not=False, **kwargs):
+    """Takes in data dictionary containing train and test sets in feature matrix form and fits an OLS model to it. Returns data dictionary with model and performance metrics.
+
+    Args:
+        data (dict): Data dictionary containing train and test set.
+        plot_or_not (bool, optional): Plots the predicted surface of the model when true. Defaults to False.
+
+    Returns:
+        dict: Dictionary with original data dictionary and train/test loss metrics as well as model weights.
+    """
     # Get data
     train_X, train_Z, test_X, test_Z = (
         data["train_X"],
@@ -50,6 +59,18 @@ def fit_OLS(data, plot_or_not=False, **kwargs):
 def train_OLS(
     data, num_features, scale=True, test_index=None, plot_or_not=False, **kwargs
 ):
+    """Takes in sampled data points in data dictionary and creates feature matrix and trains OLS model on it.
+
+    Args:
+        data (dict): Data dictionary containing x, y and z arrays of datapoints.
+        num_features (int): Number of features.
+        scale (bool, optional): Scales feature matrix when true. Defaults to True.
+        test_index (ndarray, optional): Optional indexing array used to partition train and test set. Defaults to None.
+        plot_or_not (bool, optional): Plots predicted model surface when true. Defaults to False.
+
+    Returns:
+        dict: Dictionary with original data dictionary and train/test loss metrics as well as model weights.
+    """
     data = random_dataset_split_preparation(
         data, num_features, scale=scale, test_index=test_index
     )
@@ -61,6 +82,16 @@ def train_OLS(
 
 # Define the ridge regression trainer
 def fit_RIDGE(data, lam, plot_or_not=False):
+    """Takes in data dictionary containing train and test sets in feature matrix form and fits a Ridge regression model to it. Returns data dictionary with model and performance metrics.
+
+    Args:
+        data (dict): Data dictionary containing train and test set.
+        lam (float): Lambda to use in the Ridge regression.
+        plot_or_not (bool, optional): Plots the predicted surface of the model when true. Defaults to False.
+
+    Returns:
+        dict: Dictionary with original data dictionary and train/test loss metrics as well as model weights.
+    """
     # Get data
     train_X, train_Z, test_X, test_Z = (
         data["train_X"],
@@ -101,6 +132,19 @@ def fit_RIDGE(data, lam, plot_or_not=False):
 def train_RIDGE(
     data, num_features, lam, scale=True, plot_or_not=False, test_index=None
 ):
+    """Takes in sampled data points in data dictionary and creates feature matrix and trains a Ridge regression model on it.
+
+    Args:
+        data (dict): Data dictionary containing x, y and z arrays of datapoints.
+        num_features (int): Number of features.
+        lam (float): Lambda to use in the Ridge regression.
+        scale (bool, optional): Scales feature matrix when true. Defaults to True.
+        test_index (ndarray, optional): Optional indexing array used to partition train and test set. Defaults to None.
+        plot_or_not (bool, optional): Plots predicted model surface when true. Defaults to False.
+
+    Returns:
+        dict: Dictionary with original data dictionary and train/test loss metrics as well as model weights.
+    """
     data = random_dataset_split_preparation(
         data, num_features, scale=scale, test_index=test_index
     )
@@ -111,6 +155,18 @@ def train_RIDGE(
 
 
 def fit_LASSO(data, lam, plot_or_not=False, max_iter=1000):
+    """Takes in data dictionary containing train and test sets in feature matrix form and fits a Lasso regression model to it. Returns data dictionary with model and performance metrics.
+
+    Args:
+        data (dict): Data dictionary containing train and test set.
+        lam (float): Lambda to use in the Lasso regression.
+        plot_or_not (bool, optional): Plots the predicted surface of the model when true. Defaults to False.
+
+    Returns:
+        dict: Dictionary with original data dictionary and train/test loss metrics as well as model weights.
+    """
+    
+    
     """
     Scikit optimises this:
         (1 / (2 * n_samples)) * ||y - Xw||^2_2 + lambda * ||w||_1
@@ -166,6 +222,20 @@ def train_LASSO(
     test_index=None,
     max_iter=1000,
 ):
+    """Takes in sampled data points in data dictionary and creates feature matrix and trains a Lasso regression model on it.
+
+    Args:
+        data (dict): Data dictionary containing x, y and z arrays of datapoints.
+        num_features (int): Number of features.
+        lam (float): Lambda to use in the Lasso regression.
+        scale (bool, optional): Scales feature matrix when true. Defaults to True.
+        test_index (ndarray, optional): Optional indexing array used to partition train and test set. Defaults to None.
+        plot_or_not (bool, optional): Plots predicted model surface when true. Defaults to False.
+        max_iter (int): Maximum number of iterations used in sklearn fitting of model. Defaults to 1000
+
+    Returns:
+        dict: Dictionary with original data dictionary and train/test loss metrics as well as model weights.
+    """
     data = random_dataset_split_preparation(
         data, num_features, scale=scale, test_index=test_index
     )

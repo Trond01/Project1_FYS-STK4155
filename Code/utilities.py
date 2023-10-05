@@ -81,6 +81,14 @@ def train_test_split(X, Y, percentage, test_index=None):
 
 
 def scale_feature_matrix(X):
+    """Scales feature matrix using mean/variance scaling.
+
+    Args:
+        X (Matrix): Feature Matrix
+
+    Returns:
+        Matrix: Scaled feature matrix
+    """
     means = np.mean(X, axis=0).reshape((1, X.shape[1]))
     means[0, 0] = 0
     var = np.var(X, axis=0).reshape((1, X.shape[1]))
@@ -91,19 +99,42 @@ def scale_feature_matrix(X):
 
 
 def MSELoss(y, y_pred):
+    """MSE loss of prediction array.
+
+    Args:
+        y (ndarray): Target values
+        y_pred (ndarray): Predicted values
+
+    Returns:
+        float: MSE loss
+    """
     return np.power(y - y_pred, 2).sum() / y.shape[0]
 
 
 def R_squared(y, y_pred):
+    """R squared value of prediction array.
+
+    Args:
+        y (ndarray): Target values
+        y_pred (ndarray): Predicted values
+
+    Returns:
+        float: R squared
+    """
     return 1 - ((np.sum(np.power(y - y_pred, 2))) / (np.sum(np.power(y - y.mean(), 2))))
 
 
 # Functions to initialise data dictionary
-def r2_sampling(num_points, sigma2=0):
-    """
-    To add noise, input sigma2 > 0.
-    """
+def r2_sampling(num_points, sigma2=0.0):
+    """Samples datapoints in the range (0, 1)x(0, 1) from the Franke function. Optionally adds noise to the sample.
 
+    Args:
+        num_points (int): Number of points to sample
+        sigma2 (float, optional): Variance of the Gaussian where the noise is sampled. Defaults to 0.
+
+    Returns:
+        dict: Data dictionairy containing three arrays for the x, y and z coordinates of the points respectively.
+    """
     x = np.random.random((num_points, 1))
     y = np.random.random((num_points, 1))
 
@@ -115,6 +146,16 @@ def r2_sampling(num_points, sigma2=0):
 
 
 def prepare_feature_matrix(data, num_features, scale=True):
+    """Takes in data dictionary and creates scaled feature matrix with given number of features.
+
+    Args:
+        data (dict): Data dictionary containing x and y arrays of datapoints.
+        num_features (int): Number of features to use in the feature matrix
+        scale (bool, optional): Scales feature matrix when true. Defaults to True.
+
+    Returns:
+        dict: Data dictionary containing feature matrix as well as means and variance used when scaling. Also contains number of features in the feature matrix.
+    """
     x, y = data["x"], data["y"]
 
     X = feature_matrix(x, y, num_features)
@@ -132,6 +173,17 @@ def prepare_feature_matrix(data, num_features, scale=True):
 
 
 def random_dataset_split_preparation(data, num_features, scale=True, test_index=None):
+    """Takes data dictionary with x, y and z arrays. Creates feature matrix and splits it into train and test sets.
+
+    Args:
+        data (dict): Data dictionary containing x, y and z arrays of datapoints.
+        num_features (int): Number of features
+        scale (bool, optional): Scales feature matrix when true. Defaults to True.
+        test_index (ndarray, optional): Optional indexing array used to partition into test and train sets. Defaults to None.
+
+    Returns:
+        dict: Data array containing train and test sets as well as index used to split.
+    """
     x, y, z = data["x"], data["y"], data["z"]
 
     data = prepare_feature_matrix(data, num_features, scale=scale)
@@ -201,6 +253,16 @@ def load_terrain(filename):
 def sample_terrain_data(
     n_points, filename="data_source/SRTM_data_Norway_1.tif", seed=42
 ):
+    """Samples terrain data from USGS dataset.
+
+    Args:
+        n_points (int): Number of data points to sample.
+        filename (str, optional): File from which to sample data from. Defaults to "data_source/SRTM_data_Norway_1.tif".
+        seed (int, optional): Seed used to sample datapoints. Defaults to 42.
+
+    Returns:
+        dict: Data dictionary containing sampled x, y and z arrays.
+    """
     # Set seed
     np.random.seed(seed)
 

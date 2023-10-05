@@ -6,11 +6,12 @@ from matplotlib import pyplot as plt
 
 
 
-def plot_MSE_R2_experiment(train_method, num_features = 100, num_points = 151, lam=0, seed = 42, mark_deg_nn = True, filename=False, data = None, sigma2=0):    
-    """
-    If using custom data, the data variable needs to be a dictionary with the fields {'x', 'y', 'z'}
-    containing arrays with their respective data points. x, y, z should be of shape (number_points, 1)
-    """
+def plot_MSE_R2_experiment(train_method, num_features = 100, num_points = 151, lam=0, seed = 42, mark_deg_nn = True, filename=False, data = None, sigma2=0):
+    
+    # """
+    # If using custom data, the data variable needs to be a dictionary with the fields {'x', 'y', 'z'}
+    # containing arrays with their respective data points. x, y, z should be of shape (number_points, 1)
+    # """
     # Set seed of choice
     np.random.seed(seed)
 
@@ -74,7 +75,7 @@ def plot_MSE_R2_experiment(train_method, num_features = 100, num_points = 151, l
     return MRS_test, MRS_train,R2_test, R2_train
 
 
-def plot_beta_experiment(train_method, beta_comp_indeces, num_features = 100, num_points = 151, lam=0, seed = 42, mark_deg_nn = True, filename=False, data = None, sigma2=0.0):    
+def plot_beta_experiment(train_method, beta_comp_indeces, num_features = 100, num_points = 151, lam=0, seed = 42, mark_deg_nn = True, filename=False, data = None, sigma2=0.0):
     """
     If using custom data, the data variable needs to be a dictionary with the fields {'x', 'y', 'z'}
     containing arrays with their respective data points. x, y, z should be of shape (number_points, 1)

@@ -5,6 +5,11 @@ from matplotlib import cm
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
 
 def plot_Franke(resolution = 101):
+    """Plots surface of Franke function.
+
+    Args:
+        resolution (int, optional): How granular the surface plot is. Defaults to 101.
+    """
     # Make data.
     x = np.linspace(0, 1, resolution)
     y = np.linspace(0, 1, resolution)
@@ -15,7 +20,14 @@ def plot_Franke(resolution = 101):
     plot_surface(x,y,z)
 
 def plot_surface(x,y,z, filename=None):
+    """Plots surface with a 
 
+    Args:
+        x (meshgrid): x values for surface plot.
+        y (meshgrid): y values for surface plot.
+        z (meshgrid): z values for surface plot.
+        filename (str, optional): Optional filename to save surface plot to. Defaults to None.
+    """
     # Init figure
     fig = plt.figure()
     ax = fig.add_subplot(projection = '3d')
@@ -37,6 +49,15 @@ def plot_surface(x,y,z, filename=None):
         plt.savefig(filename)
 
 def plot_model_prediction(predict_func, num_features, means, var, filename=None):
+    """Takes in function predicting z values for a given place in x and y grid.
+
+    Args:
+        predict_func (function): Function used to create z values for surface.
+        num_features (int): Number of features used in model.
+        means (ndarray): Means used to scale feature matrix in model training.
+        var (ndarray): Variance used to scale feature matrix in model training.
+        filename (str, optional): Optional filename to save plot to. Defaults to None.
+    """
     fig = plt.figure()
 
     num_plot = 101
