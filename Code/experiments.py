@@ -6,10 +6,19 @@ from matplotlib import pyplot as plt
 
 
 
-def plot_MSE_R2_experiment(train_method, num_features = 100, num_points = 151, lam=0, seed = 42, mark_deg_nn = True, filename=False, data = None, sigma2=0):    
-    """
-    If using custom data, the data variable needs to be a dictionary with the fields {'x', 'y', 'z'}
-    containing arrays with their respective data points. x, y, z should be of shape (number_points, 1)
+def plot_MSE_R2_experiment(train_method, num_features = 100, num_points = 151, lam=0, seed = 42, mark_deg_nn = True, filename=False, data = None, sigma2=0):
+    """Plots the MSE and R2 values for different feature numbers.
+
+    Args:
+        train_method (function): The function used to fit the data(train_RIDGE, train_LASSO)
+        num_features (int): Maximum number of features to use for the models.
+        lam (float, optional): Lambda value to use for Ridge or Lasso regression.
+        num_points (int, optional): Number of points to generate for the Franke function dataset.
+        seed (int, optional): Seed to use for experiment. Defaults to 42.
+        mark_deg_nn (boolean, optional): Marks the points where the number of features containing x and number of features containing y are the same.
+        data (dict, optional): Optional data dictionary containing custom data to use instead of Franke function. Needs to contain x, y and z arrays for datapoints. Defaults to None.
+        filename (str, optional): Optional filename for where to save figure. Defaults to None.
+        sigma2 (float, optional): Variance of Gaussian noise to be added to generated Franke function data.
     """
     # Set seed of choice
     np.random.seed(seed)
@@ -74,10 +83,20 @@ def plot_MSE_R2_experiment(train_method, num_features = 100, num_points = 151, l
     return MRS_test, MRS_train,R2_test, R2_train
 
 
-def plot_beta_experiment(train_method, beta_comp_indeces, num_features = 100, num_points = 151, lam=0, seed = 42, mark_deg_nn = True, filename=False, data = None, sigma2=0.0):    
-    """
-    If using custom data, the data variable needs to be a dictionary with the fields {'x', 'y', 'z'}
-    containing arrays with their respective data points. x, y, z should be of shape (number_points, 1)
+def plot_beta_experiment(train_method, beta_comp_indeces, num_features = 100, num_points = 151, lam=0, seed = 42, filename=False, data = None, sigma2=0.0):
+    """Plots the parameter values as model is trained with different number of parameters.
+
+    Args:
+        train_method (function): The function used to fit the data(train_RIDGE, train_LASSO)
+        beta_comp_indeces (list): List of integers, features to be included in plot. 
+        num_features (int): Maximum number of features to use for the models.
+        lam (float, optional): Lambda value to use for Ridge or Lasso regression.
+        num_points (int, optional): Number of points to generate for the Franke function dataset.
+        seed (int, optional): Seed to use for experiment. Defaults to 42.
+        nth (int, optional): Plots nth model prediction surface. Defaults to 3.
+        data (dict, optional): Optional data dictionary containing custom data to use instead of Franke function. Needs to contain x, y and z arrays for datapoints. Defaults to None.
+        filename (str, optional): Optional filename for where to save figure. Defaults to None.
+        sigma2 (float, optional): Variance of Gaussian noise to be added to generated Franke function data.
     """
     # Set seed of choice
     np.random.seed(seed)
@@ -135,19 +154,20 @@ def plot_beta_experiment(train_method, beta_comp_indeces, num_features = 100, nu
 
 
 def analyze_lambda_range(train_method,  high_deg, lam_low, lam_high, num_lam, num_points=101, seed=42, nth=3, data=None, filename=None, sigma2=0.0):
-    """_summary_
+    """Takes in a training method(either Ridge or Lasso) and trains a model for a range of lambda values for different number of features in the models.
 
     Args:
-        method (function): The function used to fit the data(train_RIDGE, train_LASSO)
-        num_points (_type_): _description_
-        high_deg (_type_): _description_
-        lam_low (_type_): _description_
-        lam_high (_type_): _description_
-        num_lam (_type_): _description_
-        seed (int, optional): _description_. Defaults to 42.
-        nth (int, optional): _description_. Defaults to 3.
-        data (_type_, optional): _description_. Defaults to None.
-        filename (str, optional): _description_. Defaults to "lambda_range.png".
+        train_method (function): The function used to fit the data(train_RIDGE, train_LASSO)
+        high_deg (int): Maximum number of features to use for the models.
+        lam_low (float): Lowest lambda value that will be used is 1e-(lam_low)
+        lam_high (float): Highest lambda value that will be used is 1e-(lam_high)
+        num_lam (int): Number of lambda values to use in the lambda range.
+        num_points (int, optional): Number of points to generate for the Franke function dataset.
+        seed (int, optional): Seed to use for experiment. Defaults to 42.
+        nth (int, optional): Plots nth model prediction surface. Defaults to 3.
+        data (dict, optional): Optional data dictionary containing custom data to use instead of Franke function. Needs to contain x, y and z arrays for datapoints. Defaults to None.
+        filename (str, optional): Optional filename for where to save figure. Defaults to None.
+        sigma2 (float, optional): Variance of Gaussian noise to be added to generated Franke function data.
     """
     
     # Set seed and sample
