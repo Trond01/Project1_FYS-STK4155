@@ -13,6 +13,15 @@ from Code.regression import fit_OLS
 
 
 def resample(X, Z):
+    """Samples from training set with replacement.
+
+    Args:
+        X (Matrix): Feature matrix of training set.
+        Z (ndarray): Target vector of training set.
+
+    Returns:
+        (Matrix, ndarray): Resampled feature matrix and target vector.
+    """
     # Index range
     index_range = np.arange(0, X.shape[0])
 
@@ -24,7 +33,16 @@ def resample(X, Z):
 
 # Code inspired by https://compphysics.github.io/MachineLearning/doc/LectureNotes/_build/html/chapter3.html#the-bias-variance-tradeoff
 def bootstrap(data, n_bootstraps=10, plot_first=False):
-    """ """
+    """Performs a bootstraping using the OLS method to train the model.
+
+    Args:
+        data (dict): Data dictionairy containing training and test set.
+        n_bootstraps (int, optional): Number of bootstraps to perform. Defaults to 10.
+        plot_first (bool, optional): Plots predicted surface of first model training in bootstrap when true. Defaults to False.
+
+    Returns:
+        (float, float, float, float, float): Returns the error, bias and variance of bootstrap as well as average train loss and average test loss.
+    """
     # Get data
     train_X, train_Z, test_X, test_Z = (
         data["train_X"],
@@ -75,12 +93,21 @@ def tradeoff_experiment(
     filename=False,
     sigma2=0.0,
 ):
-    """
-    If using custom data, the data variable needs to be a dictionary with the fields {'x', 'y', 'z'}
-    containing arrays with their respective data points. x, y, z should be of shape (number_points, 1)
-    """
-    """
-    nth: plot each nth figure
+    """Performs a bootstrapping experiment to showcase the bias-variance tradeoff. Performs a bootstrap at different number of features up until num_features.
+
+    Args:
+        num_features (int): Maximum number of features to use for the models.
+        num_points (int, optional): Number of points to generate for the Franke function dataset.
+        n_bootstraps (int, optional): Number of bootstraps to perform per feature number. Defaults to 50.
+        nth (int, optional): Plots nth model prediction surface. Defaults to 3.
+        data (dict, optional): Optional data dictionary containing custom data to use instead of Franke function. Needs to contain x, y and z arrays for datapoints. Defaults to None.
+        seed (int, optional): Seed to use for experiment. Defaults to 42.
+        mark_deg_nn (boolean, optional): Marks the points where the number of features containing x and number of features containing y are the same.
+        filename (str, optional): Optional filename for where to save figure. Defaults to None.
+        sigma2 (float, optional): Variance of Gaussian noise to be added to generated Franke function data.
+
+    Returns:
+        (ndarray, ndarray, ndarray, ndarray): Feature number array with the corresponding error, bias and variance arrays.
     """
 
     # Set seed

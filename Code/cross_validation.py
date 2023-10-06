@@ -11,16 +11,25 @@ from Code.regression import fit_OLS, fit_LASSO, fit_RIDGE
 
 
 def k_fold_split(X, Z, k):
-    """
-    returns list of touples (train, test) of length k
+    """Splits the feature matrix and target vector into k partitions.
 
-    Let * be train and _ be test. The 5-fold split can be understood by:
+    Args:
+        X (Matrix): Feature matrix of dataset
+        Z (ndarray): Target vector of dataset
+        k (int): Number of folds to use for the k fold split.
 
-        ****_
-        ***_*
-        **_**
-        *_***
-        _****
+    Returns:
+        List: List of touples containing the different train and test splits.
+    
+        
+    Notes:
+        Let * be train and _ be test. The 5-fold split can be understood by:
+
+            ****_ \n
+            ***_* \n
+            **_** \n
+            *_*** \n
+            _**** \n
 
     """
     # Find number of data and split size
@@ -70,12 +79,22 @@ def cross_validation_experiment(
     seed=42,
     start=1,
 ):
+    """Performs a cross validation experiment on all of the fitting methods in method_dict_list
+
+    Args:
+        n_folds (function): The function used to fit the data(train_RIDGE, train_LASSO)
+        method_dict_list (List): List containing dictionaries of different methods with their names and potential lambda values.
+        n_points (int, optional): Number of points to generate for the Franke function dataset.
+        num_features (int): Maximum number of features to use for the models.
+        data (dict, optional): Optional data dictionary containing custom data to use instead of Franke function. Needs to contain x, y and z arrays for datapoints. Defaults to None.
+        mark_deg_nn (boolean, optional): Marks the points where the number of features containing x and number of features containing y are the same.
+        filename (str, optional): Optional filename for where to save figure. Defaults to None.
+        seed (int, optional): Seed to use for experiment. Defaults to 42.
+    
+    Returns:
+        (ndarray, ndarray): ndarrays containing the test and train loss for different feature numbers respectively.
     
     """
-    If using custom data, the data variable needs to be a dictionary with the fields {'x', 'y', 'z'}
-    containing arrays with their respective data points. x, y, z should be of shape (number_points, 1)
-    """
-
     # Set seed
     np.random.seed(seed)
 
