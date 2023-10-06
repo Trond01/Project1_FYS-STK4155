@@ -94,7 +94,7 @@ def scale_feature_matrix(X):
     var = np.var(X, axis=0).reshape((1, X.shape[1]))
     var[0, 0] = 1
     X_copy = np.copy(X - means)
-    X_copy = X_copy / var
+    X_copy = X_copy / np.sqrt(var)
     return X_copy, means, var
 
 
@@ -281,6 +281,3 @@ def sample_terrain_data(
     final_z = z[y_index, x_index]
 
     return {"x": final_x, "y": final_y, "z": final_z}
-
-
-####
