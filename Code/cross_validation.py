@@ -20,8 +20,8 @@ def k_fold_split(X, Z, k):
 
     Returns:
         List: List of touples containing the different train and test splits.
-    
-        
+
+
     Notes:
         Let * be train and _ be test. The 5-fold split can be understood by:
 
@@ -90,10 +90,10 @@ def cross_validation_experiment(
         mark_deg_nn (boolean, optional): Marks the points where the number of features containing x and number of features containing y are the same.
         filename (str, optional): Optional filename for where to save figure. Defaults to None.
         seed (int, optional): Seed to use for experiment. Defaults to 42.
-    
+
     Returns:
         (ndarray, ndarray): ndarrays containing the test and train loss for different feature numbers respectively.
-    
+
     """
     # Set seed
     np.random.seed(seed)
@@ -148,13 +148,13 @@ def cross_validation_experiment(
             feature_numbers,
             all_errors_test,
             styles[0],
-            label=f"Average test error {name}",
+            label=f"Test error {name}",
         )
         plt.plot(
             feature_numbers,
             all_errors_train,
             styles[1],
-            label=f"Average train error {name}",
+            label=f"Train error {name}",
         )
 
     # Mark finished degrees
