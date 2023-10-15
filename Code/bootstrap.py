@@ -182,7 +182,7 @@ def tradeoff_experiment(
 
     # Save figure if filename given
     if filename1:
-        plt.savefig(filename1)
+        plt.savefig(filename1, bbox_inches="tight")
     plt.show()
 
     plt.plot(feature_numbers, train_losses, label="Bootstrap Train Loss", c="b")
@@ -196,7 +196,7 @@ def tradeoff_experiment(
 
     # Save figure if filename given
     if filename2:
-        plt.savefig(filename2)
+        plt.savefig(filename2, bbox_inches="tight")
     plt.show()
 
     return feature_numbers, errors, biases, variances
