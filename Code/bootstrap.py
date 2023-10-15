@@ -54,7 +54,6 @@ def bootstrap(data, n_bootstraps=10, plot_first=False):
     # Array for storing finds
     Z_pred = np.empty((test_Z.shape[0], n_bootstraps))
 
-
     bootstraps_train_loss = []
     bootstraps_test_loss = []
 
@@ -68,8 +67,8 @@ def bootstrap(data, n_bootstraps=10, plot_first=False):
             plot_first = False
         run_data = fit_OLS(data, plot_or_not=plot_first)
 
-        bootstraps_train_loss.append(run_data['train_loss'])
-        bootstraps_test_loss.append(run_data['test_loss'])
+        bootstraps_train_loss.append(run_data["train_loss"])
+        bootstraps_test_loss.append(run_data["test_loss"])
 
         # Make prediction
         Z_pred[:, i] = run_data["predictor"](test_X).ravel()
@@ -79,7 +78,13 @@ def bootstrap(data, n_bootstraps=10, plot_first=False):
     bias = np.mean((test_Z - np.mean(Z_pred, axis=1, keepdims=True)) ** 2)
     variance = np.mean(np.var(Z_pred, axis=1, keepdims=True))
 
-    return error, bias, variance, sum(bootstraps_train_loss)/len(bootstraps_train_loss), sum(bootstraps_test_loss)/len(bootstraps_test_loss)
+    return (
+        error,
+        bias,
+        variance,
+        sum(bootstraps_train_loss) / len(bootstraps_train_loss),
+        sum(bootstraps_test_loss) / len(bootstraps_test_loss),
+    )
 
 
 def tradeoff_experiment(
@@ -90,7 +95,8 @@ def tradeoff_experiment(
     data=None,
     seed=42,
     mark_deg_nn=True,
-    filename=False,
+    filename1=False,
+    filename2=False,
     sigma2=0.0,
 ):
     """Performs a bootstrapping experiment to showcase the bias-variance tradeoff. Performs a bootstrap at different number of features up until num_features.
@@ -103,7 +109,7 @@ def tradeoff_experiment(
         data (dict, optional): Optional data dictionary containing custom data to use instead of Franke function. Needs to contain x, y and z arrays for datapoints. Defaults to None.
         seed (int, optional): Seed to use for experiment. Defaults to 42.
         mark_deg_nn (boolean, optional): Marks the points where the number of features containing x and number of features containing y are the same.
-        filename (str, optional): Optional filename for where to save figure. Defaults to None.
+        filename1/2 (str, optional): Optional filename for where to save figure 1 and 2. Defaults to None.
         sigma2 (float, optional): Variance of Gaussian noise to be added to generated Franke function data.
 
     Returns:
@@ -146,7 +152,6 @@ def tradeoff_experiment(
             new_data, n_bootstraps=n_bootstraps, plot_first=plot
         )
 
-
         # We need to scale bias and variance to get a meaningfull result
         bias, variance = bias, variance
 
@@ -157,7 +162,6 @@ def tradeoff_experiment(
 
         train_losses[num - 1] = train_mean
         test_losses[num - 1] = test_mean
-
 
     ## Make plot of bias and variance
 
@@ -177,19 +181,22 @@ def tradeoff_experiment(
     plt.title("The Bias Variance Tradeoff")
 
     # Save figure if filename given
-    if filename:
-        plt.savefig(filename)
+    if filename1:
+        plt.savefig(filename1, bbox_inches="tight")
     plt.show()
 
     plt.plot(feature_numbers, train_losses, label="Bootstrap Train Loss", c="b")
     plt.plot(feature_numbers, test_losses, label="Bootstrap Test Loss", c="r")
-    
+
     # Add legend and labels
     plt.legend()
     plt.xlabel("Number of features")
     plt.ylabel("MSE")
-    plt.title("Loss")
+    plt.title("Bootstrap Train/Test loss")
 
+    # Save figure if filename given
+    if filename2:
+        plt.savefig(filename2, bbox_inches="tight")
     plt.show()
 
     return feature_numbers, errors, biases, variances

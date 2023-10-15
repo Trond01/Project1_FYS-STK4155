@@ -165,8 +165,7 @@ def fit_LASSO(data, lam, plot_or_not=False, max_iter=1000):
     Returns:
         dict: Dictionary with original data dictionary and train/test loss metrics as well as model weights.
     """
-    
-    
+
     """
     Scikit optimises this:
         (1 / (2 * n_samples)) * ||y - Xw||^2_2 + lambda * ||w||_1
@@ -180,9 +179,13 @@ def fit_LASSO(data, lam, plot_or_not=False, max_iter=1000):
         data["test_Z"],
     )
 
+    # Find n and compute alpha as in report
+    n = train_X.shape[0]
+    alpha = lam / (2 * n)
+
     # Do the fitting and evaluate errors
     regressor = linear_model.Lasso(
-        lam, fit_intercept=False, max_iter=max_iter
+        alpha, fit_intercept=False, max_iter=max_iter
     )  # We include intercept with False
     regressor.fit(train_X, train_Z)
 
