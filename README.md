@@ -5,8 +5,8 @@ This is a repository for the first project in the course FYS-STK4155 - Applied D
 ├── Code # The code used in the project, including experiment functions with user friendly interface \
 ├── Report # A report of our results, methods, etc...\
 ├── Runs # The code used to generate the figures in the report\
-├──── results # figures
-├──── data_source # the terrain data
+├──── results # figures \
+├──── data_source # the terrain data \
 ├── README.md \
 └── .gitignore
 
